@@ -15,7 +15,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install pipenv
-          pipenv install
+          pipenv install --deploy --ignore-pipfile
       - name: Post Update
         env:
           CONSUMER_KEY: ${{ env.CONSUMER_KEY }}
