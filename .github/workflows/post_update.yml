@@ -1,4 +1,4 @@
-name: Python application
+name: Post Update
 
 on: [push]
 
@@ -23,4 +23,5 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
         run: |
-          pipenv run post_update.py
+          pipenv shell
+          python post_update.py
