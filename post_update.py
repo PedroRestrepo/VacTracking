@@ -11,11 +11,38 @@ try:
 
     api = tweepy.API(auth)
 except KeyError:
-    print('No keys provided')
-    # print('Missing the Twitter API keys. Quitting execution')
-    # sys.exit()
-    pass
+    print('Missing the Twitter API keys. Quitting execution')
+    sys.exit()
 
-regional_stats = requests.get('https://api.covid19tracker.ca/summary/split').json()
+covid_stats = requests.get(
+    'https://api.covid19tracker.ca/summary/split').json()['data']
+region_stats = requests.get('https://api.covid19tracker.ca/provinces').json()
+tweets = ['']
+parent_tweet = None
 
-print('regional_stats', regional_stats['data'])
+# Format the combined stats per tweet
+for region in region_stats:
+    covid_region_stats = next(
+        (stat for stat in covid_stats if stat['province'] == region['code']), None)
+    if covid_region_stats:
+        current_tweet_count = len(tweets) - 1
+        province_tweet = f"{region['name']}: {covid_region_stats['change_vaccinations']} vaccinated today \n"
+        combined_tweet = tweets[current_tweet_count] + province_tweet
+
+        if len(combined_tweet) >= 273:
+            tweets.append(province_tweet)
+        else:
+            tweets[current_tweet_count] = combined_tweet
+
+
+# Add formating to each tweet and post it
+for index, tweet in enumerate(tweets):
+    formatted_tweet = f'({index + 1}/{len(tweets)})' + tweet
+
+    print('Publishing tweet:' + formatted_tweet)
+    if index == 0 or not parent_tweet:
+        parent_tweet = api.update_status(status=formatted_tweet)
+    else:
+        api.update_status(status=formatted_tweet,
+                          in_reply_to_status_id=parent_tweet.id, auto_populate_reply_metadata=True)
+
