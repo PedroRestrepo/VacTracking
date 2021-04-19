@@ -37,7 +37,7 @@ for region in region_stats:
 
 # Add formating to each tweet and post it
 for index, tweet in enumerate(tweets):
-    formatted_tweet = f'({index + 1}/{len(tweets)})' + tweet
+    formatted_tweet = f'({index + 1}/{len(tweets)}) ' + tweet
 
     print('Publishing tweet:' + formatted_tweet)
     if index == 0 or not parent_tweet:

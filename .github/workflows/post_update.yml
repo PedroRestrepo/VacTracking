@@ -1,6 +1,8 @@
 name: Post Update
 
-on: [push]
+on:
+  schedule:
+    - cron: "0 14 * * *"
 
 jobs:
   build:
