@@ -1,6 +1,8 @@
-name: Python application
+name: Post Update
 
-on: [push]
+on:
+  schedule:
+    - cron: "0 14 * * *"
 
 jobs:
   build:
@@ -12,16 +14,17 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
+      # Tried with just pipenv but kept getting the error of "could not be found within PATH or Pipfile's [scripts]"
       - name: Install Dependencies
         run: |
           pip install pipenv
-          pipenv install
+          pipenv lock -r > requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Post Update
         env:
-          CONSUMER_KEY: ${{ env.CONSUMER_KEY }}
-          CONSUMER_SECRET: ${{ env.CONSUMER_SECRET }}
-          ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
-          ACCESS_TOKEN_SECRET: ${{ env.ACCESS_TOKEN_SECRET }}
+          CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+          CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
         run: |
-          pipenv install
-          pipenv run src/post_update.py
+          python post_update.py
