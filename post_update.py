@@ -16,7 +16,7 @@ try:
     api = tweepy.API(auth)
 except KeyError:
     print('Missing the Twitter API keys. Quitting execution')
-    # sys.exit()
+    sys.exit()
 
 covid_stats = requests.get(
     'https://api.covid19tracker.ca/summary/split').json()['data']
@@ -51,8 +51,8 @@ for index, tweet in enumerate(tweets):
     formatted_tweet = f'({index + 1}/{len(tweets)}) ' + tweet
 
     print('Publishing tweet:' + formatted_tweet)
-    # if index == 0 or not parent_tweet:
-    #     parent_tweet = api.update_status(status=formatted_tweet)
-    # else:
-    #     api.update_status(status=formatted_tweet,
-    #                       in_reply_to_status_id=parent_tweet.id, auto_populate_reply_metadata=True)
+    if index == 0 or not parent_tweet:
+        parent_tweet = api.update_status(status=formatted_tweet)
+    else:
+        api.update_status(status=formatted_tweet,
+                          in_reply_to_status_id=parent_tweet.id, auto_populate_reply_metadata=True)
